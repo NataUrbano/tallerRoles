@@ -1,170 +1,138 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
+  <title>Dashboard | Ejercicio Positivo</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <style>
     :root {
-      --color-primary: #FF9AA2; /* Rosa más intenso */
-      --color-secondary: #FFB7B2; /* Rosa suave */
-      --color-accent: #FFDAC1; /* Melocotón */
-      --color-light: #FFF9F4; /* Blanco roto */
-      --color-dark: #8A7F8D; /* Gris morado */
+      --pastel-blue: #a7c7e7;
+      --pastel-pink: #f8c8dc;
+      --pastel-green: #c1e1c1;
+      --pastel-purple: #d8bfd8;
+      --pastel-yellow: #fdfd96;
     }
-
     body {
-      background-color: var(--color-light);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
     }
-
     .sidebar {
-      background-color: white;
+      background-color: var(--pastel-purple);
       min-height: 100vh;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-      padding: 0;
-    }
-
-    .sidebar-header {
-      background-color: var(--color-primary);
       padding: 20px;
-      color: white;
     }
-
-    .nav-link {
-      color: var(--color-dark);
-      padding: 12px 20px;
-      border-left: 4px solid transparent;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      background-color: rgba(255, 154, 162, 0.1);
-      border-left: 4px solid var(--color-primary);
-      color: var(--color-primary);
-    }
-
     .main-content {
       padding: 30px;
     }
-
-    .welcome-card {
-      background-color: white;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      border-left: 5px solid var(--color-primary);
-    }
-
-    .role-card {
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s;
+    .card {
       border: none;
-      height: 100%;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+      margin-bottom: 20px;
     }
-
-    .role-card:hover {
+    .card:hover {
       transform: translateY(-5px);
     }
-
-    .card-admin {
-      border-top: 4px solid var(--color-primary);
-    }
-
     .card-creator {
-      border-top: 4px solid #B5EAD7; /* Verde pastel */
+      background-color: var(--pastel-green);
     }
-
     .card-editor {
-      border-top: 4px solid var(--color-accent);
+      background-color: var(--pastel-blue);
     }
-
-    .btn-primary-custom {
-      background-color: var(--color-primary);
+    .card-admin {
+      background-color: var(--pastel-yellow);
+    }
+    .user-info {
+      background-color: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .btn-logout {
+      background-color: #ff9aa2;
       border: none;
       color: white;
     }
-
-    .btn-primary-custom:hover {
-      background-color: #ff7d87;
-      color: white;
-    }
-
-    .btn-secondary-custom {
-      background-color: #B5EAD7; /* Verde pastel */
-      border: none;
-      color: #333;
-    }
-
-    .btn-secondary-custom:hover {
-      background-color: #9bd4c1;
-      color: #333;
-    }
-
-    .btn-accent-custom {
-      background-color: var(--color-accent);
-      border: none;
-      color: #333;
-    }
-
-    .btn-accent-custom:hover {
-      background-color: #ffc9a6;
-      color: #333;
-    }
-
-    .logout-btn {
-      width: calc(100% - 40px);
-      margin: 20px;
-      background-color: var(--color-dark);
-      color: white;
-    }
-
-    .logout-btn:hover {
-      background-color: #7a6f7b;
-      color: white;
-    }
-
-    .badge-role {
-      background-color: var(--color-primary);
+    .btn-logout:hover {
+      background-color: #ff7b8b;
       color: white;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Panel de Control</h1>
-
-    <ul>
-      <li><a th:href="@{/}">Inicio</a></li>
-      <li><a th:href="@{/dashboard}">Dashboard</a></li>
-
-      <!-- Solo visible para ADMIN -->
-      <li sec:authorize="hasAuthority('ADMIN')">
-        <a th:href="@{/users}">Gestión de Usuarios</a>
-      </li>
-
-      <!-- Visible para ADMIN y CREATOR -->
-      <li sec:authorize="hasAnyAuthority('ADMIN', 'CREATOR')">
-        <a th:href="@{/new}">Crear Nuevo Item</a>
-      </li>
-
-      <!-- Visible para ADMIN y EDITOR -->
-      <li sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
-        <a th:href="@{/edit/1}">Editar Items</a>
-      </li>
-    </ul>
-
-    <div>
-      <h2>Bienvenido, <span th:text="${username}"></span></h2>
-      <p>Tienes los siguientes roles:
-        <span th:each="role : ${roles}" th:text="${role.authority} + ' '"></span>
-      </p>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 d-md-block sidebar">
+      <div class="text-center mb-4">
+        <h3 class="text-white">Ejercicio Positivo</h3>
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active text-dark fw-bold" href="#">Dashboard</a>
+        </li>
+        <li class="nav-item" th:if="${#lists.contains(roles, 'ADMIN')}">
+          <a class="nav-link text-dark" th:href="@{/users}">Gestión de Usuarios</a>
+        </li>
+        <li class="nav-item" th:if="${#lists.contains(roles, 'ADMIN') or #lists.contains(roles, 'ROLE_CREATOR')}">
+          <a class="nav-link text-dark" th:href="@{/new}">Crear Nuevo Item</a>
+        </li>
+      </ul>
+      <div class="mt-4">
+        <a th:href="@{/auth/logout}" class="btn btn-logout w-100">Cerrar Sesión</a>
+      </div>
     </div>
 
-    <form th:action="@{/auth/logout}" method="post">
-      <button type="submit">Cerrar Sesión</button>
-    </form>
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 main-content">
+      <div class="user-info">
+        <h4>Bienvenido, <span th:text="${username}"></span>!</h4>
+        <p class="mb-0">Roles:
+          <span th:each="role : ${roles}" th:text="${role.authority}" class="badge rounded-pill bg-light text-dark me-1"></span>
+        </p>
+      </div>
+
+      <h4 class="mb-4">Acciones Disponibles</h4>
+      <div class="row">
+        <!-- Card for Creators -->
+        <div class="col-md-4" th:if="${#lists.contains(roles, 'ADMIN') or #lists.contains(roles, 'CREATOR')}">
+          <div class="card card-creator h-100">
+            <div class="card-body text-center">
+              <h5 class="card-title">Crear Nuevo Item</h5>
+              <p class="card-text">Accede al formulario para crear nuevos items en el sistema.</p>
+              <a th:href="@{/new}" class="btn btn-light">Ir a Crear</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card for Editors -->
+        <div class="col-md-4" th:if="${#lists.contains(roles, 'ADMIN') or #lists.contains(roles, 'EDITOR')}">
+          <div class="card card-editor h-100">
+            <div class="card-body text-center">
+              <h5 class="card-title">Editar Items</h5>
+              <p class="card-text">Accede a la funcionalidad para editar items existentes.</p>
+              <a href="#" class="btn btn-light">Ir a Editar</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card for Admins -->
+        <div class="col-md-4" th:if="${#lists.contains(roles, 'ADMIN')}">
+          <div class="card card-admin h-100">
+            <div class="card-body text-center">
+              <h5 class="card-title">Administración</h5>
+              <p class="card-text">Gestiona usuarios y configuración del sistema.</p>
+              <a th:href="@{/users}" class="btn btn-light">Ir a Administrar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

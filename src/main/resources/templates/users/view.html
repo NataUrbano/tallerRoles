@@ -1,102 +1,156 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles de Usuario</title>
+    <title>Detalle de Usuario | Ejercicio Positivo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
+        :root {
+            --pastel-blue: #a7c7e7;
+            --pastel-pink: #f8c8dc;
+            --pastel-green: #c1e1c1;
+            --pastel-purple: #d8bfd8;
+            --pastel-yellow: #fdfd96;
+        }
         body {
-            background-color: #f9f9f9;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: var(--pastel-purple);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .main-content {
+            padding: 30px;
         }
         .user-card {
             background-color: white;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
-        .role-badge {
-            background-color: #dcedc1;
-            color: #333;
-            margin-right: 5px;
-            margin-bottom: 5px;
-        }
-        .btn-add-role {
-            background-color: #a8e6cf;
-            border: none;
-            color: #333;
-        }
-        .btn-add-role:hover {
-            background-color: #8fd3c7;
-        }
-        .btn-remove-role {
-            background-color: #ffaaa5;
-            border: none;
-            color: white;
-        }
-        .btn-remove-role:hover {
-            background-color: #ff8b94;
-        }
-        .header {
-            background-color: #ffaaa5;
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 25px;
             margin-bottom: 30px;
+        }
+        .btn-pastel-blue {
+            background-color: var(--pastel-blue);
+            border-color: var(--pastel-blue);
+        }
+        .btn-pastel-blue:hover {
+            background-color: #92b7d8;
+            border-color: #92b7d8;
+        }
+        .btn-logout {
+            background-color: #ff9aa2;
+            border: none;
+            color: white;
+        }
+        .btn-logout:hover {
+            background-color: #ff7b8b;
+            color: white;
+        }
+        .badge-admin {
+            background-color: var(--pastel-yellow);
+            color: #333;
+        }
+        .badge-creator {
+            background-color: var(--pastel-green);
+            color: #333;
+        }
+        .badge-editor {
+            background-color: var(--pastel-blue);
+            color: #333;
         }
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <div class="header">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1>Detalles de Usuario</h1>
-            <a th:href="@{/users}" class="btn btn-light">Volver a la lista</a>
-        </div>
-    </div>
-
-    <div class="user-card">
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <h4>Información Básica</h4>
-                <p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
-                <p><strong>Nombre de Usuario:</strong> <span th:text="${user.username}"></span></p>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="text-center mb-4">
+                <h3 class="text-white">Ejercicio Positivo</h3>
             </div>
-            <div class="col-md-6">
-                <h4>Roles Asignados</h4>
-                <div th:each="role : ${user.roles}" class="d-inline-block">
-                    <span class="badge role-badge" th:text="${role.name}"></span>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-dark" th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" th:href="@{/users}">Gestión de Usuarios</a>
+                </li>
+                <li class="nav-item" th:if="${#lists.contains(roles, 'ROLE_ADMIN') or #lists.contains(roles, 'ROLE_CREATOR')}">
+                    <a class="nav-link text-dark" th:href="@{/new}">Crear Nuevo Item</a>
+                </li>
+            </ul>
+            <div class="mt-4">
+                <a th:href="@{/auth/logout}" class="btn btn-logout w-100">Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Detalle de Usuario</h2>
+                <a th:href="@{/users}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            <div class="user-card">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h5>Información Básica</h5>
+                        <p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
+                        <p><strong>Nombre de Usuario:</strong> <span th:text="${user.username}"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Roles Asignados</h5>
+                        <div th:each="role : ${user.roles}">
+                    <span th:text="${role.name}"
+                          th:classappend="${role.name == 'ROLE_ADMIN'} ? 'badge badge-admin me-1' :
+                                          (${role.name == 'ROLE_CREATOR'} ? 'badge badge-creator me-1' :
+                                          (${role.name == 'ROLE_EDITOR'} ? 'badge badge-editor me-1' :
+                                          'badge badge-user me-1'))"></span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <hr>
+                <hr>
 
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <h4>Agregar Rol</h4>
-                <form th:action="@{/users/{id}/add-role(id=${user.id})}" method="post">
-                    <div class="input-group mb-3">
-                        <select name="roleEnum" class="form-select">
-                            <option th:each="role : ${T(com.library.ejercicio_positivo.Model.RoleEnum).values()}"
-                                    th:value="${role}"
-                                    th:text="${role}"></option>
-                        </select>
-                        <button class="btn btn-add-role" type="submit">Agregar</button>
+                <h5 class="mb-3">Gestión de Roles</h5>
+                <form th:action="@{/users/{id}/add-role(id=${user.id})}" method="post" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <select name="roleEnum" class="form-select">
+                                <option value="ADMIN">Administrador</option>
+                                <option value="CREATOR">Creador</option>
+                                <option value="EDITOR">Editor</option>
+                                <option value="USER">Usuario Básico</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-pastel-blue text-white">
+                                <i class="bi bi-plus-circle"></i> Añadir Rol
+                            </button>
+                        </div>
                     </div>
                 </form>
-            </div>
 
-            <div class="col-md-6">
-                <h4>Eliminar Rol</h4>
                 <form th:action="@{/users/{id}/remove-role(id=${user.id})}" method="post">
-                    <div class="input-group mb-3">
-                        <select name="roleEnum" class="form-select">
-                            <option th:each="role : ${user.roles}"
-                                    th:value="${role.name}"
-                                    th:text="${role.name}"></option>
-                        </select>
-                        <button class="btn btn-remove-role" type="submit">Eliminar</button>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <select name="roleEnum" class="form-select">
+                                <option value="ADMIN">Administrador</option>
+                                <option value="CREATOR">Creador</option>
+                                <option value="EDITOR">Editor</option>
+                                <option value="USER">Usuario Básico</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-dash-circle"></i> Quitar Rol
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

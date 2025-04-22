@@ -33,19 +33,19 @@ public class AppController {
     }
 
     @GetMapping("/new")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'CREATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CREATOR')")
     public String newItem() {
         return "items/new";
     }
 
     @GetMapping("/edit/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public String editItem(@PathVariable Long id) {
         return "items/edit";
     }
 
     @PostMapping("/delete/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteItem(@PathVariable Long id) {
         // Lógica para eliminar
         return "redirect:/";

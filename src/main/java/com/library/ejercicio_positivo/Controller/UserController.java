@@ -5,13 +5,10 @@ import com.library.ejercicio_positivo.Model.RoleEnum;
 import com.library.ejercicio_positivo.Model.UserEntity;
 import com.library.ejercicio_positivo.Service.RoleService;
 import com.library.ejercicio_positivo.Service.UserService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/users")
@@ -25,17 +22,14 @@ public class UserController {
         this.roleService = roleService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<UserEntity>> findAll() {
-        console.log("user");
-        return ResponseEntity.ok(userService.findAll());
-    }
 
+    @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String listUsers(Model model) {
         model.addAttribute("users", userService.findAll());
         return "users/list";
     }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
