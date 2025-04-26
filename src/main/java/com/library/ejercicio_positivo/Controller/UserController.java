@@ -23,7 +23,7 @@ public class UserController {
     }
 
 
-    @GetMapping
+    @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public String listUsers(Model model) {
         model.addAttribute("users", userService.findAll());

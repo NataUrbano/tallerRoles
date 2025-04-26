@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,11 +63,11 @@
                 <li class="nav-item">
                     <a class="nav-link text-dark" th:href="@{/dashboard}">Dashboard</a>
                 </li>
-                <li class="nav-item" th:if="${#lists.contains(roles, 'ADMIN')}">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link text-dark" th:href="@{/users}">Gestión de Usuarios</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active text-dark fw-bold" href="#">Crear Nuevo Item</a>
+                    <a class="nav-link active text-dark fw-bold" th:action="@{/new}" >Crear Nuevo Item</a>
                 </li>
             </ul>
             <div class="mt-4">

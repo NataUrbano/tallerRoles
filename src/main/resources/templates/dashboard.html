@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,6 +60,15 @@
       background-color: #ff7b8b;
       color: white;
     }
+    .role-badge {
+      background-color: #e2e3e5;
+      color: #383d41;
+      padding: 0.35em 0.65em;
+      border-radius: 50rem;
+      display: inline-block;
+      margin-right: 0.5em;
+      margin-bottom: 0.5em;
+    }
   </style>
 </head>
 <body>
@@ -73,11 +83,11 @@
         <li class="nav-item">
           <a class="nav-link active text-dark fw-bold" href="#">Dashboard</a>
         </li>
-        <li class="nav-item" th:if="${#lists.contains(roles, 'ADMIN')}">
-          <a class="nav-link text-dark" th:href="@{/users}">Gestión de Usuarios</a>
+        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+          <a class="nav-link text-dark" th:href="@{/users/list}">Gestión de Usuarios</a>
         </li>
-        <li class="nav-item" th:if="${#lists.contains(roles, 'ADMIN') or #lists.contains(roles, 'ROLE_CREATOR')}">
-          <a class="nav-link text-dark" th:href="@{/new}">Crear Nuevo Item</a>
+        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'CREATOR')">
+          <a class="nav-link text-dark" th:href="@{/items/new}">Crear Nuevo Item</a>
         </li>
       </ul>
       <div class="mt-4">
@@ -88,16 +98,18 @@
     <!-- Main Content -->
     <div class="col-md-9 col-lg-10 main-content">
       <div class="user-info">
-        <h4>Bienvenido, <span th:text="${username}"></span>!</h4>
+        <h4>Bienvenido, <span sec:authentication="name"></span>!</h4>
         <p class="mb-0">Roles:
-          <span th:each="role : ${roles}" th:text="${role.authority}" class="badge rounded-pill bg-light text-dark me-1"></span>
+          <span th:each="role : ${#authentication.getAuthorities()}"
+                th:text="${role.getAuthority().replace('ROLE_', '')}"
+                class="role-badge"></span>
         </p>
       </div>
 
       <h4 class="mb-4">Acciones Disponibles</h4>
       <div class="row">
         <!-- Card for Creators -->
-        <div class="col-md-4" th:if="${#lists.contains(roles, 'ADMIN') or #lists.contains(roles, 'CREATOR')}">
+        <div class="col-md-4" sec:authorize="hasAnyRole('ADMIN', 'CREATOR')">
           <div class="card card-creator h-100">
             <div class="card-body text-center">
               <h5 class="card-title">Crear Nuevo Item</h5>
@@ -108,23 +120,23 @@
         </div>
 
         <!-- Card for Editors -->
-        <div class="col-md-4" th:if="${#lists.contains(roles, 'ADMIN') or #lists.contains(roles, 'EDITOR')}">
+        <div class="col-md-4" sec:authorize="hasAnyRole('ADMIN', 'EDITOR')">
           <div class="card card-editor h-100">
             <div class="card-body text-center">
               <h5 class="card-title">Editar Items</h5>
               <p class="card-text">Accede a la funcionalidad para editar items existentes.</p>
-              <a href="#" class="btn btn-light">Ir a Editar</a>
+              <a th:href="@{'/item/edit/'+ ${}}" class="btn btn-light">Ir a Editar</a>
             </div>
           </div>
         </div>
 
         <!-- Card for Admins -->
-        <div class="col-md-4" th:if="${#lists.contains(roles, 'ADMIN')}">
+        <div class="col-md-4" sec:authorize="hasRole('ADMIN')">
           <div class="card card-admin h-100">
             <div class="card-body text-center">
               <h5 class="card-title">Administración</h5>
               <p class="card-text">Gestiona usuarios y configuración del sistema.</p>
-              <a th:href="@{/users}" class="btn btn-light">Ir a Administrar</a>
+              <a th:href="@{/users/list}" class="btn btn-light">Ir a Administrar</a>
             </div>
           </div>
         </div>
